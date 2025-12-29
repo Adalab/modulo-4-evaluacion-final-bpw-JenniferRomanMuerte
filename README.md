@@ -43,6 +43,13 @@ npm start
 
 Servidor en `http://localhost:3000`.
 
+## Frontend (archivos estáticos)
+
+La app sirve el frontend (HTML/CSS/JS) como archivos estáticos desde la carpeta `public/` usando Express.
+
+- Local: abre `http://localhost:3000` (la API queda bajo `/api/...`)
+- Producción (Render): `https://modulo-4-evaluacion-final-bpw-b1ee.onrender.com`
+
 ## Endpoints
 
 ### Songs
@@ -64,4 +71,3 @@ La especificación OpenAPI está en `swagger.json`.
 
 - Puedes abrirla en Swagger Editor (importando el JSON).
 - Si quieres servirla con Swagger UI, puedes montarla en Express (la dependencia `swagger-ui-express` ya está en `package.json`).
-
