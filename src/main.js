@@ -2,9 +2,24 @@
 const express = require("express");
 const cors = require("cors");
 
+// Importar la biblioteca de MySQL
+
 const mysql = require("mysql2/promise");
 
+// Importamos la biblioteca de variables de entorno
+
 require("dotenv").config();
+
+// Importamos la biblioteca de contraseñas
+
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
+// Importamos la biblioteca de tokens
+const jwt = require("jsonwebtoken");
+const jwtSecret = process.env.JWT_SECRET;
+
+// ----------  SECCION DE CONFIGURACIÓN DE EXPRESS  ----------
 
 // Creamos el servidor
 const server = express();
@@ -29,10 +44,6 @@ async function getConnection() {
     database: process.env.MYSQL_SCHEMA || "music_manager",
   });
   await connection.connect();
-
-  console.log(
-    `Conexión establecida con la base de datos (identificador=${connection.threadId})`
-  );
 
   return connection;
 }
@@ -235,6 +246,156 @@ server.delete("/api/songs/:songId", async (req, res) => {
     return res.status(500).json({
       success: false,
       error: "Error al eliminar la canción en la base de datos.",
+    });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+/*****************************
+ENDPOINTS PARA REGISTRO Y LOGIN
+*******************************/
+
+server.post("/api/user/register", async (req, res) => {
+  // Compobar los datos que me envían
+  if (!req.body.email) {
+    return res.status(401).json({
+      success: false,
+      error: "Falta el email",
+    });
+  }
+  if (!req.body.pass) {
+    return res.status(401).json({
+      success: false,
+      error: "Falta el pass",
+    });
+  }
+
+  let connection;
+  try {
+    connection = await getConnection();
+
+    // Comprobamos si ya existe una usuaria con ese email
+    const queryIsEmail = `
+    SELECT * FROM users WHERE email = ?
+  `;
+
+    const [resultsIsEmail] = await connection.query(queryIsEmail, [
+      req.body.email,
+    ]);
+
+    // Si existe informamos
+    if (resultsIsEmail.length > 0) {
+      return res.status(401).json({
+        success: false,
+        error: "La usuaria ya existe",
+      });
+    }
+
+    // Creamos la consulta
+    const insertOneUser = `
+    INSERT INTO users (name, lastname, email, password)
+      VALUES (?, ?, ?, ?);`;
+
+    // Creamos la contraseña encriptada
+    const passEncrypted = await bcrypt.hash(req.body.pass, saltRounds);
+
+    // Lanzamos la consulta con los datos
+    const [result] = await connection.execute(insertOneUser, [
+      req.body.name,
+      req.body.lastname,
+      req.body.email,
+      passEncrypted,
+    ]);
+
+    // Si ha habido una columna afectada es correcto devolvemos el id
+    if (result.affectedRows === 1) {
+      return res.json({
+        success: true,
+        user_id: result.insertId,
+      });
+    }
+    // Si falla informamos
+    return res.json({
+      success: false,
+      error: "No se pudo añadir la usuaria a la bbdd",
+    });
+  } catch {
+    return res.status(500).json({
+      success: false,
+      error: "Error al crear el usuario en la base de datos.",
+    });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
+
+server.post("/api/user/login", async (req, res) => {
+  // Compobar los datos que me envían
+  if (!req.body.email) {
+    return res.status(400).json({
+      success: false,
+      error: "Falta el email",
+    });
+  }
+  if (!req.body.pass) {
+    return res.status(400).json({
+      success: false,
+      error: "Falta el pass",
+    });
+  }
+
+  let connection;
+
+  try {
+    connection = await getConnection();
+
+    const queryVerifyUserByEmail = `
+    SELECT *
+      FROM users
+      WHERE email = ?;`;
+
+    const [resultsVerify] = await connection.query(queryVerifyUserByEmail, [
+      req.body.email,
+    ]);
+
+    if (resultsVerify.length !== 1) {
+      // No existe usuaria con el email que nos envían en el body
+
+      return res.status(401).json({
+        success: false,
+        error: "Email o contraseña incorrectas",
+      });
+    }
+
+    const userFind = resultsVerify[0];
+
+    // usuariaEncontrada.contraseña === req.body.pass
+    if (await bcrypt.compare(req.body.pass, userFind.password)) {
+      // Las contraseñas coinciden
+
+      const dataToken = {
+        id: userFind.id,
+        nombre: userFind.name,
+        email: userFind.email,
+      };
+
+      const tokenJWT = jwt.sign(dataToken, jwtSecret);
+
+      return res.json({
+        success: true,
+        token: tokenJWT,
+      });
+    }
+    // Las contraseñas no coinciden
+    return res.status(401).json({
+      success: false,
+      error: "Email o contraseña incorrectas",
+    });
+  } catch {
+    return res.status(500).json({
+      success: false,
+      error: "Error al recuperar al usuario.",
     });
   } finally {
     if (connection) await connection.end();
