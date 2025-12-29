@@ -1,6 +1,7 @@
 // Importamos los dos módulos de NPM necesarios para trabajar
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 // Importar la biblioteca de MySQL
 
@@ -33,6 +34,9 @@ const serverPort = 3000;
 server.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
+
+// Configuracion servidor estático
+server.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Conexion a la BBDD
 async function getConnection() {
@@ -400,4 +404,16 @@ server.post("/api/user/login", async (req, res) => {
   } finally {
     if (connection) await connection.end();
   }
+});
+
+
+
+/*****************************
+ENDPOINTS PARA RUTAS NO ENCONTRADAS
+*******************************/
+server.get(/.*/, (req,res)=>{
+  const notFoundPageRelativePath = "../public/notFound.html";
+  const notFoundPageAbsolutePath = path.join(__dirname, notFoundPageRelativePath);
+  res.status(404).sendFile(notFoundPageAbsolutePath);
+
 });

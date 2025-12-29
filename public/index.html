@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <title>Music Manager</title>
+  </head>
+  <body>
+    <header class="header">
+      <h1>Music Manager</h1>
+
+      <nav class="authNav" aria-label="Autenticación">
+        <button class="authNav_btn" type="button" id="loginBtn">Login</button>
+        <button class="authNav_btn"  type="button" id="registerBtn">Register</button>
+      </nav>
+    </header>
+
+    <section class="section" aria-labelledby="authTitle">
+      <div id="loginPanel" class="panel" hidden>
+        <h3 class="panelTitle">Login</h3>
+        <form id="loginForm">
+          <label for="email">
+            Email
+            <input id="email" type="email" name="email" required />
+          </label>
+          <label for="pass">
+            Password
+            <input id="pass" type="password" name="pass" required />
+          </label>
+          <button class="loginBtn" type="submit">Entrar</button>
+        </form>
+      </div>
+
+      <div id="registerPanel" class="panel" hidden>
+        <h3 class="panelTitle">Register</h3>
+        <form id="registerForm">
+          <label>
+            Name
+            <input type="text" name="name" />
+          </label>
+          <label>
+            Lastname
+            <input type="text" name="lastname" />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="pass" required />
+          </label>
+          <button class="registerBtn" type="submit">Crear cuenta</button>
+        </form>
+      </div>
+      <div class="status" aria-live="polite"></div>
+    </section>
+    <main class="main">
+      <section class="section" aria-labelledby="songsTitle">
+        <h2 class="songsTitle">Canciones</h2>
+        <ul class="songsList"></ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <small>&copy; Jennifer Román - Music Manager</small>
+    </footer>
+
+    <script src="./js/index.js" defer></script>
+  </body>
+</html>

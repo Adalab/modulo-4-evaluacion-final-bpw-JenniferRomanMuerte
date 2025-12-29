@@ -1,0 +1,33 @@
+:root {
+  --bg: #0b1020;
+  --surface: rgba(255, 255, 255, 0.06);
+  --text: #e9ecf5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  width: 100dvw;
+  color: var(--text);
+  background: radial-gradient(
+      900px 600px at 15% 10%,
+      rgba(124, 92, 255, 0.22),
+      transparent 55%
+    ),
+    radial-gradient(
+      700px 500px at 85% 20%,
+      rgba(91, 219, 255, 0.18),
+      transparent 60%
+    ),
+    var(--bg);
+  font-size: 1.8rem;
+  letter-spacing: 0.2px;
+}
+
+
