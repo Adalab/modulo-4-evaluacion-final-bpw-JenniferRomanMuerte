@@ -134,3 +134,50 @@ server.post("/api/songs", async (req, res) => {
     if (connection) await connection.end();
   }
 });
+
+// ACTUALIZAR UNA CANCIÓN
+server.put("/api/songs/:songId", async (req, res) => {
+  if (!req.body.title) {
+    return res.status(400).json({
+      success: false,
+      error: "El campo 'title' es obligatorio",
+    });
+  }
+
+  if (!Number.isInteger(Number(req.body.release_year))) {
+    return res.status(400).json({
+      success: false,
+      error: "El campo del año debe ser un entero",
+    });
+  }
+
+  let queryUpdatetSong =
+    "UPDATE songs  SET title = ?, release_year= ? WHERE id = ?;";
+
+  let connection;
+
+  try {
+    connection = await getConnection();
+    const [result] = await connection.query(queryUpdatetSong, [
+      req.body.title,
+      req.body.release_year,
+      req.params.songId
+    ]);
+
+   if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, error: "La cancion no se ha podido actualizar" });
+    }
+
+    return res.json({
+      success: true,
+      msg: "La canción se ha actualizado correctamente",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Error al insertar la canción en la base de datos.",
+    });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
