@@ -181,3 +181,35 @@ server.put("/api/songs/:songId", async (req, res) => {
     if (connection) await connection.end();
   }
 });
+
+
+// BORRAR UNA CANCIÓN
+server.delete("/api/songs/:songId", async (req, res) => {
+
+
+  let queryDeletetSong =
+    "DELETE FROM songs WHERE id = ? LIMIT 1;";
+
+  let connection;
+
+  try {
+    connection = await getConnection();
+    const [result] = await connection.query(queryDeletetSong, req.params.songId);
+
+   if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, error: "La cancion no se ha podido eliminado" });
+    }
+
+    return res.json({
+      success: true,
+      msg: "La canción se ha eliminado correctamente",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Error al eliminar la canción en la base de datos.",
+    });
+  } finally {
+    if (connection) await connection.end();
+  }
+});
