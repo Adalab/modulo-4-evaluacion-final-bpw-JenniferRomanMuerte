@@ -135,10 +135,10 @@ DROP TABLE IF EXISTS `songs`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `songs` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(265) DEFAULT NULL,
-  `release_date` date DEFAULT NULL,
+  `title` varchar(265) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `release_year` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,7 +147,7 @@ CREATE TABLE `songs` (
 
 LOCK TABLES `songs` WRITE;
 /*!40000 ALTER TABLE `songs` DISABLE KEYS */;
-INSERT INTO `songs` VALUES (1,'Bohemian Rhapsody','1975-10-31'),(2,'Como una ola','1982-01-01'),(3,'Devuélveme la vida','2001-01-01'),(4,'Clima tropical','2021-04-23'),(5,'Californication','2000-05-20'),(6,'Bulería','2004-01-01'),(7,'Vuelvo a empezar','2022-09-01');
+INSERT INTO `songs` VALUES (1,'Bohemian Rhapsody',1975),(2,'Como una ola',1982),(3,'Devuélveme la vida',2001),(4,'Clima tropical',2021),(5,'Californication',2000),(6,'Bulería',2004),(7,'Vuelvo a empezar',2022),(8,'Casi te rozo',1984);
 /*!40000 ALTER TABLE `songs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,4 +223,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-29  9:43:37
+-- Dump completed on 2025-12-29 11:05:01
