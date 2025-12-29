@@ -48,7 +48,6 @@ Servidor en `http://localhost:3000`.
 La app sirve el frontend (HTML/CSS/JS) como archivos estáticos desde la carpeta `public/` usando Express.
 
 - Local: abre `http://localhost:3000` (la API queda bajo `/api/...`)
-- Producción (Render): `https://modulo-4-evaluacion-final-bpw-b1ee.onrender.com`
 
 ## Endpoints
 
