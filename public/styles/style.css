@@ -125,7 +125,7 @@ input:focus {
   flex: 0 0 auto;
 }
 
-@media (min-width: 641px) {
+@media (min-width: 768px) {
   .header {
     flex-direction: row;
     align-items: center;
