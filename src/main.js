@@ -43,9 +43,9 @@ ENDPOINTS
 
 // RECUPERAR UNA  CANCIÓN
 server.get("/api/songs/:songId", async (req, res) => {
-  const songId = Number(req.params.songId);
 
-  if (!Number.isInteger(songId)) {
+
+  if (isNaN(parseInt(req.params.songId))) {
     return res.status(400).json({
       success: false,
       error: "No es un ID válido",
@@ -103,7 +103,8 @@ server.post("/api/songs", async (req, res) => {
     });
   }
 
-  if (!Number.isInteger(Number(req.body.release_year))) {
+
+  if (isNaN(parseInt(req.body.release_year))) {
     return res.status(400).json({
       success: false,
       error: "El campo del año debe ser un entero",
@@ -124,6 +125,7 @@ server.post("/api/songs", async (req, res) => {
     return res.json({
       success: true,
       id: result.insertId,
+      msg: "La canción se ha insertado correctamente"
     });
   } catch (error) {
     return res.status(500).json({
@@ -137,6 +139,14 @@ server.post("/api/songs", async (req, res) => {
 
 // ACTUALIZAR UNA CANCIÓN
 server.put("/api/songs/:songId", async (req, res) => {
+
+  if (isNaN(parseInt(req.params.songId))) {
+    return res.status(400).json({
+      success: false,
+      error: "No es un ID válido",
+    });
+  }
+
   if (!req.body.title) {
     return res.status(400).json({
       success: false,
@@ -144,7 +154,7 @@ server.put("/api/songs/:songId", async (req, res) => {
     });
   }
 
-  if (!Number.isInteger(Number(req.body.release_year))) {
+  if (isNaN(parseInt(req.body.release_year))) {
     return res.status(400).json({
       success: false,
       error: "El campo del año debe ser un entero",
@@ -165,7 +175,7 @@ server.put("/api/songs/:songId", async (req, res) => {
     ]);
 
    if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, error: "La cancion no se ha podido actualizar" });
+      return res.status(404).json({ success: false, error: "La cancion no existe" });
     }
 
     return res.json({
@@ -175,7 +185,7 @@ server.put("/api/songs/:songId", async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: "Error al insertar la canción en la base de datos.",
+      error: "Error al actualizar la canción en la base de datos.",
     });
   } finally {
     if (connection) await connection.end();
@@ -186,6 +196,12 @@ server.put("/api/songs/:songId", async (req, res) => {
 // BORRAR UNA CANCIÓN
 server.delete("/api/songs/:songId", async (req, res) => {
 
+  if (isNaN(parseInt(req.params.songId))) {
+    return res.status(400).json({
+      success: false,
+      error: "No es un ID válido",
+    });
+  }
 
   let queryDeletetSong =
     "DELETE FROM songs WHERE id = ? LIMIT 1;";
@@ -194,10 +210,10 @@ server.delete("/api/songs/:songId", async (req, res) => {
 
   try {
     connection = await getConnection();
-    const [result] = await connection.query(queryDeletetSong, req.params.songId);
+    const [result] = await connection.query(queryDeletetSong, [req.params.songId]);
 
    if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, error: "La cancion no se ha podido eliminado" });
+      return res.status(404).json({ success: false, error: "La cancion no existe" });
     }
 
     return res.json({
