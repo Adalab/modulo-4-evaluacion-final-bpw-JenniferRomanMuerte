@@ -147,7 +147,7 @@ CREATE TABLE `songs` (
 
 LOCK TABLES `songs` WRITE;
 /*!40000 ALTER TABLE `songs` DISABLE KEYS */;
-INSERT INTO `songs` VALUES (1,'Bohemian Rhapsody',1975),(2,'Como una ola',1982),(3,'Devuélveme la vida',2001),(4,'Clima tropical',2021),(5,'Californication',2000),(6,'Bulería',2004),(7,'Vuelvo a empezar',2022),(8,'Casi te rozo',1984);
+INSERT INTO `songs` VALUES (1,'Bohemian Rhapsody',1975),(2,'Como una ola',1982),(3,'Devuélveme la vida',2001),(4,'Clima tropical',2021),(5,'Californication',2000),(6,'Bulería',2004),(7,'Vuelvo a empezar',2022);
 /*!40000 ALTER TABLE `songs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -163,10 +163,10 @@ CREATE TABLE `users` (
   `name` varchar(64) DEFAULT NULL,
   `lastname` varchar(64) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
-  `password` text,
+  `password` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -175,7 +175,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Jennifer','Román','jenniferroman@mail.com','pass123'),(2,'Iván','Román','ivanroman@mail.com','pass123'),(3,'Maria','Serna','mariaserna@mail.com','pass123'),(4,'Adrián','Ruiz','adrianruiz@mail.com','pass123'),(5,'Puri','Muerte','purimuerte@mail.com','pass123');
+INSERT INTO `users` VALUES (1,'Jennifer','Román','jenniferroman@mail.com','pass123'),(2,'Iván','Román','ivanroman@mail.com','pass123'),(3,'Maria','Serna','mariaserna@mail.com','pass123'),(4,'Adrián','Ruiz','adrianruiz@mail.com','pass123'),(5,'Puri','Muerte','purimuerte@mail.com','pass123'),(6,'PruebaUser','Lastname','pruebauser@mail.com','$2b$10$djkEDi9wjmEQ8UsFb3P8GOeKF69fxCGQ6JaOFR.Qz7AOAQlplveHW');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,4 +223,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-29 11:05:01
+-- Dump completed on 2025-12-29 13:12:54

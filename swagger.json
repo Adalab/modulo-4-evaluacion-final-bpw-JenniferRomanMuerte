@@ -1,0 +1,353 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Music Manager API",
+    "version": "1.0.0",
+    "description": "API para gestionar canciones y autenticación (registro/login)."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local"
+    }
+  ],
+  "tags": [
+    { "name": "Songs", "description": "Operaciones con canciones" },
+    { "name": "Auth", "description": "Registro y login" }
+  ],
+  "paths": {
+    "/api/songs": {
+      "get": {
+        "tags": ["Songs"],
+        "summary": "Recuperar todas las canciones",
+        "responses": {
+          "200": {
+            "description": "Lista de canciones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SongRow" }
+                }
+              }
+            }
+          },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "post": {
+        "tags": ["Songs"],
+        "summary": "Insertar una canción",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SongCreate" },
+              "examples": {
+                "example": {
+                  "value": { "title": "Bohemian Rhapsody", "release_year": 1975 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canción insertada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SongCreateResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/songs/{songId}": {
+      "parameters": [
+        {
+          "name": "songId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Songs"],
+        "summary": "Recuperar una canción",
+        "responses": {
+          "200": {
+            "description": "Canción",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SongWithAuthors" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "put": {
+        "tags": ["Songs"],
+        "summary": "Actualizar una canción",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SongUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Canción actualizada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenericSuccess" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      },
+      "delete": {
+        "tags": ["Songs"],
+        "summary": "Borrar una canción",
+        "responses": {
+          "200": {
+            "description": "Canción eliminada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenericSuccess" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/user/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registro de usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RegisterRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario creado (o error controlado)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RegisterResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login de usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token JWT (o error controlado)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LoginResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SongRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "title": { "type": "string", "example": "Bohemian Rhapsody" },
+          "release_year": { "type": "integer", "nullable": true, "example": 1975 }
+        },
+        "required": ["id", "title"]
+      },
+      "Author": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "nullable": true, "example": "Queen" },
+          "lastname": { "type": "string", "nullable": true, "example": null },
+          "age": { "type": "integer", "nullable": true, "example": null }
+        },
+        "required": ["id", "name", "lastname", "age"]
+      },
+      "SongWithAuthors": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "integer", "example": 7 },
+          "title": { "type": "string", "example": "Vuelvo a empezar" },
+          "release_year": { "type": "integer", "nullable": true, "example": 2022 },
+          "authors": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Author" }
+          }
+        },
+        "required": ["id", "title", "release_year", "authors"]
+      },
+      "SongCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string" },
+          "release_year": { "type": "integer" }
+        },
+        "required": ["title", "release_year"]
+      },
+      "SongUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string" },
+          "release_year": { "type": "integer" }
+        },
+        "required": ["title", "release_year"]
+      },
+      "SongCreateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "id": { "type": "integer", "example": 9 },
+          "msg": {
+            "type": "string",
+            "example": "La canción se ha insertado correctamente"
+          }
+        },
+        "required": ["success", "id", "msg"]
+      },
+      "GenericSuccess": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "msg": { "type": "string" }
+        },
+        "required": ["success", "msg"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "error": { "type": "string" }
+        },
+        "required": ["success", "error"]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "nullable": true },
+          "lastname": { "type": "string", "nullable": true },
+          "email": { "type": "string", "format": "email" },
+          "pass": { "type": "string", "format": "password" }
+        },
+        "required": ["email", "pass"]
+      },
+      "RegisterResponse": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "success": { "type": "boolean", "example": true },
+              "user_id": { "type": "integer", "example": 6 }
+            },
+            "required": ["success", "user_id"]
+          },
+          { "$ref": "#/components/schemas/ErrorResponse" }
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "pass": { "type": "string", "format": "password" }
+        },
+        "required": ["email", "pass"]
+      },
+      "LoginResponse": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "success": { "type": "boolean", "example": true },
+              "token": { "type": "string" }
+            },
+            "required": ["success", "token"]
+          },
+          { "$ref": "#/components/schemas/ErrorResponse" }
+        ]
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Petición inválida",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+        }
+      },
+      "Unauthorized": {
+        "description": "No autorizado",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+        }
+      },
+      "NotFound": {
+        "description": "No encontrado",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+        }
+      },
+      "InternalError": {
+        "description": "Error interno",
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } }
+        }
+      }
+    }
+  }
+}
