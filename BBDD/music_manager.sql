@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19  Distrib 10.4.28-MariaDB, for Win64 (AMD64)
 --
--- Host: 127.0.0.1    Database: MusicManager
+-- Host: 127.0.0.1    Database: music_manager
 -- ------------------------------------------------------
 -- Server version	8.0.44-0ubuntu0.22.04.2
 
@@ -207,11 +207,11 @@ INSERT INTO `users_songs` VALUES (1,1),(2,1),(5,2),(3,3),(4,4),(3,5),(4,5),(5,6)
 UNLOCK TABLES;
 
 --
--- Dumping events for database 'MusicManager'
+-- Dumping events for database 'music_manager'
 --
 
 --
--- Dumping routines for database 'MusicManager'
+-- Dumping routines for database 'music_manager'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -223,4 +223,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-29  9:27:45
+-- Dump completed on 2025-12-29  9:43:37
