@@ -43,15 +43,14 @@ ENDPOINTS
 
 // RECUPERAR UNA  CANCIÓN
 server.get("/api/songs/:songId", async (req, res) => {
-
-
   if (isNaN(parseInt(req.params.songId))) {
     return res.status(400).json({
       success: false,
       error: "No es un ID válido",
     });
   }
-  let queryOneSong = "SELECT * FROM songs where id = ?;";
+  let queryOneSong =
+    "SELECT s.*, a.id AS author_id, a.name, a.lastname, a.age FROM songs AS s JOIN authors_songs AS au_so ON au_so.song_id = s.id JOIN authors AS a ON a.id = au_so.author_id WHERE s.id = ?;";
   let connection;
   try {
     connection = await getConnection();
@@ -63,7 +62,18 @@ server.get("/api/songs/:songId", async (req, res) => {
         .json({ success: false, error: "Esa canción no existe" });
     }
 
-    return res.json(results[0]);
+    const song = {
+      id: results[0].id,
+      title: results[0].title,
+      release_year: results[0].release_year,
+      authors: results.map((author) => ({
+        id: author.author_id,
+        name: author.name,
+        lastname: author.lastname,
+        age: author.age,
+      })),
+    };
+    return res.json(song);
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -103,7 +113,6 @@ server.post("/api/songs", async (req, res) => {
     });
   }
 
-
   if (isNaN(parseInt(req.body.release_year))) {
     return res.status(400).json({
       success: false,
@@ -125,7 +134,7 @@ server.post("/api/songs", async (req, res) => {
     return res.json({
       success: true,
       id: result.insertId,
-      msg: "La canción se ha insertado correctamente"
+      msg: "La canción se ha insertado correctamente",
     });
   } catch (error) {
     return res.status(500).json({
@@ -139,7 +148,6 @@ server.post("/api/songs", async (req, res) => {
 
 // ACTUALIZAR UNA CANCIÓN
 server.put("/api/songs/:songId", async (req, res) => {
-
   if (isNaN(parseInt(req.params.songId))) {
     return res.status(400).json({
       success: false,
@@ -171,11 +179,13 @@ server.put("/api/songs/:songId", async (req, res) => {
     const [result] = await connection.query(queryUpdatetSong, [
       req.body.title,
       req.body.release_year,
-      req.params.songId
+      req.params.songId,
     ]);
 
-   if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, error: "La cancion no existe" });
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "La cancion no existe" });
     }
 
     return res.json({
@@ -192,10 +202,8 @@ server.put("/api/songs/:songId", async (req, res) => {
   }
 });
 
-
 // BORRAR UNA CANCIÓN
 server.delete("/api/songs/:songId", async (req, res) => {
-
   if (isNaN(parseInt(req.params.songId))) {
     return res.status(400).json({
       success: false,
@@ -203,17 +211,20 @@ server.delete("/api/songs/:songId", async (req, res) => {
     });
   }
 
-  let queryDeletetSong =
-    "DELETE FROM songs WHERE id = ? LIMIT 1;";
+  let queryDeletetSong = "DELETE FROM songs WHERE id = ? LIMIT 1;";
 
   let connection;
 
   try {
     connection = await getConnection();
-    const [result] = await connection.query(queryDeletetSong, [req.params.songId]);
+    const [result] = await connection.query(queryDeletetSong, [
+      req.params.songId,
+    ]);
 
-   if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, error: "La cancion no existe" });
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "La cancion no existe" });
     }
 
     return res.json({
